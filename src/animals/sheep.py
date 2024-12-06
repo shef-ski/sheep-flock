@@ -22,6 +22,8 @@ class Sheep(Animal):
         self.l2 = float(os.getenv('L2_VELOCITY_WEIGHT'))
         self.l3 = float(os.getenv('L3_COLLISION_WEIGHT'))
         self.damping_factor = float(os.getenv('SHEEP_DAMPING_FACTOR'))
+        self.l4 = float(os.getenv('DOG_AVOIDANCE_VELOCITY_WEIGHT'))
+        self.dog_avoidance_radius = float(os.getenv('SHEEP_DOG_RECOGNITION_RADIUS'))
 
     def move(self, sheep: list, dogs: list):
 
@@ -38,7 +40,10 @@ class Sheep(Animal):
         # third formula
         w3 = self._calculate_avoidance_velocity(sheep)
 
-        v_raw = (self.velocity * self.l0) + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3)
+        # w4 dog avoidance
+        w4 = self._caluclate_dog_avoidance(dogs)
+
+        v_raw = (self.velocity * self.l0) + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3) + (self.l4 * w4)
         self.velocity = self._limit_speed(v_raw)
         self.position += self.velocity
 
@@ -93,4 +98,20 @@ class Sheep(Animal):
         avg_distance_vector /= len(close_neighbors)
 
         # The contribution to steer away from close neighbors
+        return -avg_distance_vector
+
+    def _caluclate_dog_avoidance(self, dogs):
+        close_dogs = [
+            dog for dog in dogs
+            if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius
+        ]
+
+        if not close_dogs:
+            return Vector2(0, 0)  # No dogs in avoidance radius
+
+        avg_distance_vector = Vector2(0, 0)
+        for dog in close_dogs:
+            avg_distance_vector += (self.position - dog.position)
+        avg_distance_vector /= len(close_dogs)
+
         return -avg_distance_vector
