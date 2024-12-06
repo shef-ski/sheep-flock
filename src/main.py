@@ -1,8 +1,11 @@
-
-import pygame 
+import pygame
 import sys
 
+from dotenv import load_dotenv
+
 from enviroment import Enviroment
+
+load_dotenv()
 
 def main():
     print("Hello world")
