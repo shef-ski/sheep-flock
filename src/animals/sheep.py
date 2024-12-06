@@ -13,8 +13,8 @@ def find_average_position_of_neighbors(neighbors):
 
 
 class Sheep(Animal):
-    def __init__(self,id, position, velocity):
-        super().__init__(id, position, velocity, Color(0,255,0,255))
+    def __init__(self, id, position, velocity):
+        super().__init__(id, position, velocity, Color(0, 255, 0, 255))
         self.max_speed = float(os.getenv('SHEEP_MAX_SPEED'))
         self.collision_radius = float(os.getenv('SHEEP_COLLISION_RADIUS'))
         self.l0 = float(os.getenv('L0_WEIGHT'))
@@ -37,19 +37,16 @@ class Sheep(Animal):
         # third formula
         w3 = self._calculate_avoidance_velocity(sheep)
 
-        v_raw = self.velocity * self.l0 + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3)
+        v_raw = (self.velocity * self.l0) + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3)
         self.velocity = self._limit_speed(v_raw)
-
         self.position += self.velocity
 
     def _limit_speed(self, v_raw):
         """
         Ensure the sheep's velocity does not exceed the maximum speed.
         """
-        speed = v_raw.magnitude()
-        if speed > self.max_speed:
-            return (v_raw / speed) * self.max_speed
-        return v_raw
+        v_raw_magnitude = abs(v_raw.magnitude())
+        return min((self.max_speed / v_raw_magnitude), 1) * v_raw
 
     def _calculate_alignment_velocity(self, neighbors):
         """
