@@ -21,6 +21,7 @@ class Sheep(Animal):
         self.l1 = float(os.getenv('L1_POSITION_WEIGHT'))
         self.l2 = float(os.getenv('L2_VELOCITY_WEIGHT'))
         self.l3 = float(os.getenv('L3_COLLISION_WEIGHT'))
+        self.damping_factor = float(os.getenv('SHEEP_DAMPING_FACTOR'))
 
     def move(self, sheep: list, dogs: list):
 
@@ -46,7 +47,7 @@ class Sheep(Animal):
         Ensure the sheep's velocity does not exceed the maximum speed.
         """
         v_raw_magnitude = abs(v_raw.magnitude())
-        return min((self.max_speed / v_raw_magnitude), 1) * v_raw
+        return min((self.max_speed / v_raw_magnitude), self.damping_factor) * v_raw
 
     def _calculate_alignment_velocity(self, neighbors):
         """
