@@ -1,14 +1,17 @@
-
-import pygame 
+import pygame
 import sys
 
+from dotenv import load_dotenv
+
 from enviroment import Enviroment
+
+load_dotenv()
 
 def main():
     print("Hello world")
 
 if __name__ == "__main__":
-    env = Enviroment((800,800), 10, 2)
+    env = Enviroment((800,800), 10, 50)
     paused = False
     while True:
         for event in pygame.event.get():

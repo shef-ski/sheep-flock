@@ -1,6 +1,7 @@
 import pygame
 from pygame import Vector2
-from animals import Sheep, Dog
+from animals.sheep import Sheep
+from animals.dog import Dog
 import random as rand
 
 class Enviroment:
