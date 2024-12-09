@@ -1,5 +1,4 @@
 from pygame import Color, Vector2
-import sys
 from src.animals.animals import Animal
 import random as rand
 

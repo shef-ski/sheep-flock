@@ -1,7 +1,5 @@
 import os
 from pygame import Color, Vector2
-import sys
-sys.path.append('/home/tibor/Documents/msc-datascience/2024w/sheep-flock')
 from src.animals.animals import Animal
 from src.utils import timed
 
