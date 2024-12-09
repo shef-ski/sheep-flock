@@ -3,6 +3,7 @@ from pygame import Color, Vector2
 from src.animals.animals import Animal
 from src.utils import timed
 
+
 @timed
 def find_average_position_of_neighbors(neighbors):
     avg_position = Vector2(0, 0)
@@ -42,7 +43,6 @@ class Sheep(Animal):
 
         # w4 dog avoidance
         w4 = self._caluclate_dog_avoidance(dogs)
-
         v_raw = (self.velocity * self.l0) + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3) + (self.l4 * w4)
         self.velocity = self._limit_speed(v_raw)
         self.position += self.velocity
@@ -87,6 +87,7 @@ class Sheep(Animal):
         """
         Rule 3: Avoid neighbors that are too close (within collision radius).
         """
+        
         close_neighbors = [
             other for other in sheep
             if other != self and (self.position - other.position).magnitude() <= self.collision_radius
@@ -98,7 +99,7 @@ class Sheep(Animal):
         # Calculate the average distance vector to close neighbors
         avg_distance_vector = Vector2(0, 0)
         for neighbor in close_neighbors:
-            avg_distance_vector += (self.position - neighbor.position)
+            avg_distance_vector += (neighbor.position - self.position)
         avg_distance_vector /= len(close_neighbors)
 
         # The contribution to steer away from close neighbors
@@ -116,7 +117,7 @@ class Sheep(Animal):
 
         avg_distance_vector = Vector2(0, 0)
         for dog in close_dogs:
-            avg_distance_vector += (self.position - dog.position)
+            avg_distance_vector += (dog.position - self.position)
         avg_distance_vector /= len(close_dogs)
 
         return -avg_distance_vector
