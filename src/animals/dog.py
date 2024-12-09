@@ -1,7 +1,9 @@
 from pygame import Color, Vector2
-
+import sys
+sys.path.append('/home/tibor/Documents/msc-datascience/2024w/sheep-flock/src')
 from src.animals.animals import Animal
 import random as rand
+
 
 
 class Dog(Animal):
