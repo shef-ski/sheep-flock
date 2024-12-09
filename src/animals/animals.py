@@ -2,6 +2,7 @@ import os
 
 from pygame import Color
 from pygame import Vector2
+from src.utils import timed
 import random as rand
 
 class Animal:
@@ -24,6 +25,7 @@ class Animal:
         self.observation_radius =  float(os.getenv('ANIMAL_OBSERVATION_RADIUS'))
 
 
+    @timed
     def find_neighbors(self, sheep: list, dogs: list):
         # right now only sheep relevant we may need to change this method to be type aware
         return  [

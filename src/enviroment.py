@@ -1,7 +1,9 @@
 import pygame
 from pygame import Vector2
+from pygame import DOUBLEBUF
 from animals.sheep import Sheep
 from animals.dog import Dog
+from utils import timed
 import random as rand
 
 class Enviroment:
@@ -20,7 +22,8 @@ class Enviroment:
 
         pygame.init()
         pygame.display.set_caption("Sheep herding")
-        self.canvas = pygame.display.set_mode((self.mapW, self.mapH))
+        self.canvas = pygame.display.set_mode((self.mapW, self.mapH), DOUBLEBUF)
+        self.canvas.set_alpha(None)
         self.fps = pygame.time.Clock()
         self.translation_vector = Vector2(self.mapW/2, self.mapH/2)
     
@@ -61,6 +64,7 @@ class Enviroment:
             dogs.append(Dog(i, position, velocity))
         return dogs
     
+    @timed
     def update_animals(self):
         # Create copies of sheep/dogs so that we update them at the same time
         # This is probably very inefficient, should be replaced with something
@@ -92,6 +96,6 @@ class Enviroment:
             self.mapW/100)
         self.update_animals()
         pygame.display.update()
-        self.fps.tick(10)
+        self.fps.tick(60)
 
         
