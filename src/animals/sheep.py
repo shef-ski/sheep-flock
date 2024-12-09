@@ -3,7 +3,6 @@ from pygame import Color, Vector2
 from src.animals.animals import Animal
 from src.utils import timed
 
-
 @timed
 def find_average_position_of_neighbors(neighbors):
     avg_position = Vector2(0, 0)
