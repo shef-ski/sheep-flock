@@ -49,7 +49,7 @@ class Enviroment:
             sheep.append(Sheep(i, position, velocity))
         return sheep
     
-    def _init_dogs(self) -> list[Sheep]:
+    def _init_dogs(self) -> list[Dog]:
         dogs = []
         for i in range(self.n_dogs):
             position = Vector2(
