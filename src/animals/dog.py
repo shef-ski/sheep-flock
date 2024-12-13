@@ -3,7 +3,6 @@ from pygame import Color, Vector2
 from src.animals.animals import Animal
 import random as rand
 
-
 class Dog(Animal):
     def __init__(self, id, position, velocity):
         super().__init__(id, position, velocity, Color(0,0,255,255))
