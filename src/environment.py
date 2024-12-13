@@ -6,7 +6,8 @@ from animals.dog import Dog
 from utils import timed
 import random as rand
 
-class Enviroment:
+
+class Environment:
     def __init__(self, dimensions, n_sheep, n_dogs):
         """
         dimensions -> tuple of (width, height)
@@ -32,7 +33,6 @@ class Enviroment:
         translated.x *= self.mapW/2
         translated.y *= self.mapH/2
         return translated
-
 
     def _init_herd(self) -> list[Sheep]:
         sheep = []
@@ -78,24 +78,24 @@ class Enviroment:
         for dog in self.dogs:
             dog.move(herd_copy, dogs_copy)
 
-    
     def draw(self):
         self.canvas.fill((255,255,255))
         for i, sheep in enumerate(self.herd):
-            dot = pygame.draw.circle(
+            pygame.draw.circle(
                 self.canvas,
                 sheep.color,
                 self._translate_to_canvas(sheep.position),
-                self.mapW/100)
+                self.mapW / 100
+            )
             
         for dog in self.dogs:
-           pygame.draw.circle(
-            self.canvas,
-            dog.color,
-            self._translate_to_canvas(dog.position),
-            self.mapW/100)
+            pygame.draw.circle(
+                self.canvas,
+                dog.color,
+                self._translate_to_canvas(dog.position),
+                self.mapW / 100
+            )
         self.update_animals()
         pygame.display.update()
         self.fps.tick(60)
-
         
