@@ -2,6 +2,7 @@ import os
 from pygame import Color, Vector2
 from src.animals.animals import Animal
 from src.utils import timed
+import random as rand
 
 
 @timed
@@ -26,37 +27,81 @@ class Sheep(Animal):
         self.l4 = float(os.getenv('DOG_AVOIDANCE_VELOCITY_WEIGHT'))
         self.dog_avoidance_radius = float(os.getenv('SHEEP_DOG_RECOGNITION_RADIUS'))
 
+        self.excitement_duration = 0
+        self.excitement_direction = None
+
+    @property
+    def is_excited(self):
+        return self.excitement_duration > 0
+
+    def excite(self, duration: int = 400):
+        self.excitement_duration = duration
+        self.color = Color(255, 0, 0, 255)
+
+        random_dir = Vector2(
+            rand.uniform(-1.5, 1.5),
+            rand.uniform(-1.5, 1.5)
+        )
+        self.excitement_direction = random_dir
+
+    def _update_excitingness(self):
+        self.excitement_duration -= 1
+        if self.excitement_duration == 0:
+            self.color = Color(0, 255, 0, 255)  # original color
+
+        random_noise = Vector2(
+            rand.uniform(-0.2, 0.2),
+            rand.uniform(-0.2, 0.2)
+        )
+        self.excitement_direction += random_noise
+
     def move(self, sheep: list, dogs: list):
+        if self.is_excited:
+            self._update_excitingness()
 
         neighbors = self.find_neighbors(sheep, dogs)
 
         if not neighbors:
             return Vector2(0, 0)
-        # first formula
-        w1 = self._calculate_alignment_velocity(neighbors)
 
-        # second formula
-        w2 = self._calculate_cohesion_velocity(neighbors)
+        # first formula (Cohesion)
+        w1 = self._calculate_cohesion_velocity(neighbors)
 
-        # third formula
-        w3 = self._calculate_avoidance_velocity(sheep)
+        # second formula (Alignment)
+        w2 = self._calculate_alignment_velocity(neighbors)
+
+        # third formula (Separation)
+        w3 = self._calculate_separation_velocity(sheep)
 
         # w4 dog avoidance
         w4 = self._caluclate_dog_avoidance(dogs)
-        v_raw = (self.velocity * self.l0) + (self.l1 * w1) + (self.l2 * w2) + (self.l3 * w3) + (self.l4 * w4)
-        self.velocity = self._limit_speed(v_raw)
+
+        if not self.is_excited:  # standard case
+            v_raw = ((self.l0 * self.velocity)
+                     + (self.l1 * w1)
+                     + (self.l2 * w2)
+                     + (self.l3 * w3)
+                     + (self.l4 * w4))
+
+            self.velocity = self._limit_speed(v_raw, self.damping_factor)
+
+        else:
+            movement = self.excitement_direction + (self.l4 * w4)
+            self.velocity = self._limit_speed(movement, 1, 2)
+
         self.position += self.velocity
-    
+
     @timed
-    def _limit_speed(self, v_raw):
+    def _limit_speed(self, v_raw, min_scalar, max_modifier=1):
         """
         Ensure the sheep's velocity does not exceed the maximum speed.
         """
         v_raw_magnitude = abs(v_raw.magnitude())
-        return min((self.max_speed / v_raw_magnitude), self.damping_factor) * v_raw
-    
+
+        return min((self.max_speed * max_modifier / v_raw_magnitude), min_scalar) * v_raw
+
     @timed
-    def _calculate_alignment_velocity(self, neighbors):
+    def _calculate_cohesion_velocity(self, neighbors):
         """
         Rule 1: Steer towards the average position of nearby boids.
         """
@@ -69,7 +114,7 @@ class Sheep(Animal):
         return steering
 
     @timed
-    def _calculate_cohesion_velocity(self, neighbors):
+    def _calculate_alignment_velocity(self, neighbors):
         """
         Rule 2: Align with the average velocity of nearby boids.
         """
@@ -83,11 +128,11 @@ class Sheep(Animal):
         return avg_velocity
 
     @timed
-    def _calculate_avoidance_velocity(self, sheep):
+    def _calculate_separation_velocity(self, sheep):
         """
         Rule 3: Avoid neighbors that are too close (within collision radius).
         """
-        
+
         close_neighbors = [
             other for other in sheep
             if other != self and (self.position - other.position).magnitude() <= self.collision_radius

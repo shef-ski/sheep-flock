@@ -22,7 +22,7 @@ class Animal:
         self.position = position
         self.velocity = velocity
         self.color = color
-        self.observation_radius =  float(os.getenv('ANIMAL_OBSERVATION_RADIUS'))
+        self.observation_radius = float(os.getenv('ANIMAL_OBSERVATION_RADIUS'))
 
 
     @timed
