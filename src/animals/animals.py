@@ -33,3 +33,11 @@ class Animal:
             if other.id != self.id and (self.position - other.position).magnitude() <= self.observation_radius
         ]
 
+    @timed
+    def find_neighbors_dog(self, sheep: list, dogs: list):
+        # right now only sheep relevant we may need to change this method to be type aware
+        return [
+            other for other in sheep
+            if other.id != self.id and (self.position - other.position).magnitude() <= self.observation_radius
+        ]
+
