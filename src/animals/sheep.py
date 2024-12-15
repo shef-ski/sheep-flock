@@ -15,8 +15,12 @@ def find_average_position_of_neighbors(neighbors):
 
 
 class Sheep(Animal):
+
+    color_default = Color(tuple(map(int, os.getenv('COLOR_SHEEP_DEFAULT').split(','))))
+    color_excited = Color(tuple(map(int, os.getenv('COLOR_SHEEP_EXCITED').split(','))))
+
     def __init__(self, id, position, velocity):
-        super().__init__(id, position, velocity, Color(0, 255, 0, 255))
+        super().__init__(id, position, velocity, self.color_default)
         self.max_speed = float(os.getenv('SHEEP_MAX_SPEED'))
         self.collision_radius = float(os.getenv('SHEEP_COLLISION_RADIUS'))
         self.l0 = float(os.getenv('L0_WEIGHT'))
@@ -35,8 +39,11 @@ class Sheep(Animal):
         return self.excitement_duration > 0
 
     def excite(self, duration: int = 400):
+        """
+        Excite a sheep by changing its color and make it run in a random direction for a certain duration.
+        """
         self.excitement_duration = duration
-        self.color = Color(255, 0, 0, 255)
+        self.color = self.color_excited
 
         random_dir = Vector2(
             rand.uniform(-1.5, 1.5),
@@ -45,9 +52,12 @@ class Sheep(Animal):
         self.excitement_direction = random_dir
 
     def _update_excitingness(self):
+        """
+        Decrease the excitement duration and keep the movement random by adding some slight noise.
+        """
         self.excitement_duration -= 1
         if self.excitement_duration == 0:
-            self.color = Color(0, 255, 0, 255)  # original color
+            self.color = self.color_default
 
         random_noise = Vector2(
             rand.uniform(-0.2, 0.2),
@@ -74,7 +84,7 @@ class Sheep(Animal):
         w3 = self._calculate_separation_velocity(sheep)
 
         # w4 dog avoidance
-        w4 = self._caluclate_dog_avoidance(dogs)
+        w4 = self._calculate_dog_avoidance(dogs)
 
         if not self.is_excited:  # standard case
             v_raw = ((self.l0 * self.velocity)
@@ -151,7 +161,7 @@ class Sheep(Animal):
         return -avg_distance_vector
 
     @timed
-    def _caluclate_dog_avoidance(self, dogs):
+    def _calculate_dog_avoidance(self, dogs):
         close_dogs = [
             dog for dog in dogs
             if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius

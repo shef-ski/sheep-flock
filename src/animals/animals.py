@@ -5,6 +5,7 @@ from pygame import Vector2
 from src.utils import timed
 import random as rand
 
+
 class Animal:
     def __init__(self,
         id:int,

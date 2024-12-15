@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import os
 from pygame import Vector2, DOUBLEBUF
 from animals.sheep import Sheep
 from animals.dog import Dog
@@ -8,6 +9,9 @@ import random as rand
 
 
 class Environment:
+
+    color_environment = tuple(map(int, os.getenv('COLOR_ENV').split(',')))
+
     def __init__(self, dimensions, n_sheep, n_dogs):
         """
         dimensions -> tuple of (width, height)
@@ -37,13 +41,24 @@ class Environment:
     def _init_herd(self) -> list[Sheep]:
         sheep = []
 
+        spawn_distribution = os.getenv("SHEEP_SPAWN_DISTRIBUTION")
+
+        print(spawn_distribution)
+
         mean = [0, 0]
         cov = np.array([[0.1, 0],  # Variance for x and y (diagonal values)
                         [0, 0.1]])  # Small values keep the points near the center
 
         for i in range(self.n_sheep):
-            x, y = np.random.multivariate_normal(mean, cov)
-            position = Vector2(float(x), float(y))
+            if spawn_distribution == "normal":
+                x, y = np.random.multivariate_normal(mean, cov)
+                position = Vector2(float(x), float(y))
+
+            else:  # uniform
+                position = Vector2(
+                    rand.uniform(-1, 1),
+                    rand.uniform(-1, 1)
+                )
 
             velocity = Vector2(
                 rand.uniform(-0.1, 0.1),
@@ -69,7 +84,7 @@ class Environment:
 
     def _choose_sheep_to_excite(self, p):
         """
-        With probability p, select a (uniformly) random sheep in the herd which becomes excited.
+        With probability p, select one (uniformly) random sheep in the herd which becomes excited.
         """
         if rand.random() < p:
             chosen_sheep = rand.choice(self.herd)
@@ -93,7 +108,7 @@ class Environment:
             dog.move(herd_copy, dogs_copy)
 
     def draw(self):
-        self.canvas.fill((255,255,255))
+        self.canvas.fill(self.color_environment)
         for i, sheep in enumerate(self.herd):
             pygame.draw.circle(
                 self.canvas,

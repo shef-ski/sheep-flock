@@ -14,8 +14,11 @@ def find_average_position_of_neighbors(neighbors):
 
 
 class Dog(Animal):
+
+    color = Color(tuple(map(int, os.getenv('COLOR_DOG').split(','))))
+
     def __init__(self, id, position, velocity):
-        super().__init__(id, position, velocity, Color(0, 0, 255, 255))
+        super().__init__(id, position, velocity, self.color)
         self.id = id
         self.max_speed = float(os.getenv('DOG_MAX_SPEED'))
         self.collision_radius = float(os.getenv('SHEEP_COLLISION_RADIUS'))
@@ -55,8 +58,6 @@ class Dog(Animal):
                      + (self.d2 * w2)
                      + (self.d3 * w3)
                      + (self.d3_2 * w3.rotate(90)))
-
-
 
         self.velocity = self._limit_speed(v_raw, self.damping_factor)
         self.position += self.velocity
