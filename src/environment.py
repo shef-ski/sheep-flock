@@ -43,12 +43,14 @@ class Environment:
 
         spawn_distribution = os.getenv("SHEEP_SPAWN_DISTRIBUTION")
 
+        print(spawn_distribution)
+
         mean = [0, 0]
         cov = np.array([[0.1, 0],  # Variance for x and y (diagonal values)
                         [0, 0.1]])  # Small values keep the points near the center
 
         for i in range(self.n_sheep):
-            if spawn_distribution is "normal":
+            if spawn_distribution == "normal":
                 x, y = np.random.multivariate_normal(mean, cov)
                 position = Vector2(float(x), float(y))
 

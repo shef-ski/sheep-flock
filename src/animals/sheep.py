@@ -39,6 +39,9 @@ class Sheep(Animal):
         return self.excitement_duration > 0
 
     def excite(self, duration: int = 400):
+        """
+        Excite a sheep by changing its color and make it run in a random direction for a certain duration.
+        """
         self.excitement_duration = duration
         self.color = self.color_excited
 
@@ -49,6 +52,9 @@ class Sheep(Animal):
         self.excitement_direction = random_dir
 
     def _update_excitingness(self):
+        """
+        Decrease the excitement duration and keep the movement random by adding some slight noise.
+        """
         self.excitement_duration -= 1
         if self.excitement_duration == 0:
             self.color = self.color_default
@@ -78,7 +84,7 @@ class Sheep(Animal):
         w3 = self._calculate_separation_velocity(sheep)
 
         # w4 dog avoidance
-        w4 = self._caluclate_dog_avoidance(dogs)
+        w4 = self._calculate_dog_avoidance(dogs)
 
         if not self.is_excited:  # standard case
             v_raw = ((self.l0 * self.velocity)
@@ -155,7 +161,7 @@ class Sheep(Animal):
         return -avg_distance_vector
 
     @timed
-    def _caluclate_dog_avoidance(self, dogs):
+    def _calculate_dog_avoidance(self, dogs):
         close_dogs = [
             dog for dog in dogs
             if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius

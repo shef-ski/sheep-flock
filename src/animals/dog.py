@@ -59,8 +59,6 @@ class Dog(Animal):
                      + (self.d3 * w3)
                      + (self.d3_2 * w3.rotate(90)))
 
-
-
         self.velocity = self._limit_speed(v_raw, self.damping_factor)
         self.position += self.velocity
 
