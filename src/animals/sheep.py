@@ -15,8 +15,12 @@ def find_average_position_of_neighbors(neighbors):
 
 
 class Sheep(Animal):
+
+    color_default = Color(tuple(map(int, os.getenv('COLOR_SHEEP_DEFAULT').split(','))))
+    color_excited = Color(tuple(map(int, os.getenv('COLOR_SHEEP_EXCITED').split(','))))
+
     def __init__(self, id, position, velocity):
-        super().__init__(id, position, velocity, Color(0, 255, 0, 255))
+        super().__init__(id, position, velocity, self.color_default)
         self.max_speed = float(os.getenv('SHEEP_MAX_SPEED'))
         self.collision_radius = float(os.getenv('SHEEP_COLLISION_RADIUS'))
         self.l0 = float(os.getenv('L0_WEIGHT'))
@@ -36,7 +40,7 @@ class Sheep(Animal):
 
     def excite(self, duration: int = 400):
         self.excitement_duration = duration
-        self.color = Color(255, 0, 0, 255)
+        self.color = self.color_excited
 
         random_dir = Vector2(
             rand.uniform(-1.5, 1.5),
@@ -47,7 +51,7 @@ class Sheep(Animal):
     def _update_excitingness(self):
         self.excitement_duration -= 1
         if self.excitement_duration == 0:
-            self.color = Color(0, 255, 0, 255)  # original color
+            self.color = self.color_default
 
         random_noise = Vector2(
             rand.uniform(-0.2, 0.2),

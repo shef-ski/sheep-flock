@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import os
 from pygame import Vector2, DOUBLEBUF
 from animals.sheep import Sheep
 from animals.dog import Dog
@@ -8,6 +9,9 @@ import random as rand
 
 
 class Environment:
+
+    color_environment = tuple(map(int, os.getenv('COLOR_ENV').split(',')))
+
     def __init__(self, dimensions, n_sheep, n_dogs):
         """
         dimensions -> tuple of (width, height)
@@ -69,7 +73,7 @@ class Environment:
 
     def _choose_sheep_to_excite(self, p):
         """
-        With probability p, select a (uniformly) random sheep in the herd which becomes excited.
+        With probability p, select one (uniformly) random sheep in the herd which becomes excited.
         """
         if rand.random() < p:
             chosen_sheep = rand.choice(self.herd)
@@ -93,7 +97,7 @@ class Environment:
             dog.move(herd_copy, dogs_copy)
 
     def draw(self):
-        self.canvas.fill((255,255,255))
+        self.canvas.fill(self.color_environment)
         for i, sheep in enumerate(self.herd):
             pygame.draw.circle(
                 self.canvas,
