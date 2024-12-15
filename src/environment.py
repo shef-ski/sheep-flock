@@ -41,13 +41,22 @@ class Environment:
     def _init_herd(self) -> list[Sheep]:
         sheep = []
 
+        spawn_distribution = os.getenv("SHEEP_SPAWN_DISTRIBUTION")
+
         mean = [0, 0]
         cov = np.array([[0.1, 0],  # Variance for x and y (diagonal values)
                         [0, 0.1]])  # Small values keep the points near the center
 
         for i in range(self.n_sheep):
-            x, y = np.random.multivariate_normal(mean, cov)
-            position = Vector2(float(x), float(y))
+            if spawn_distribution is "normal":
+                x, y = np.random.multivariate_normal(mean, cov)
+                position = Vector2(float(x), float(y))
+
+            else:  # uniform
+                position = Vector2(
+                    rand.uniform(-1, 1),
+                    rand.uniform(-1, 1)
+                )
 
             velocity = Vector2(
                 rand.uniform(-0.1, 0.1),
