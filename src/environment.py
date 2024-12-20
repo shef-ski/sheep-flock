@@ -1,15 +1,33 @@
+from distutils.util import strtobool
+
 import numpy as np
 import pygame
 import os
 from pygame import Vector2, DOUBLEBUF
 from animals.sheep import Sheep
-from animals.dog import Dog
+from animals.dog import Dog, ControllableDog
 from utils import timed
 import random as rand
 
 
-class Environment:
+def add_controllable_dog(dogs):
 
+    controllable_dog_id = len(dogs)
+    start_pos = Vector2(
+        rand.uniform(-1, 1),
+        rand.uniform(-1, 1)
+    )
+    start_vel = Vector2(0, 0)
+
+    controllable_dog = ControllableDog(controllable_dog_id, start_pos, start_vel)
+    dogs.append(controllable_dog)
+
+
+def _simulation_has_controllable_dog():
+    return bool(strtobool(os.getenv('SPAWN_CONTROLLABLE_DOG', 'True')))
+
+
+class Environment:
     color_environment = tuple(map(int, os.getenv('COLOR_ENV').split(',')))
 
     def __init__(self, dimensions, n_sheep, n_dogs):
@@ -25,17 +43,20 @@ class Environment:
         self.herd = self._init_herd()
         self.dogs = self._init_dogs()
 
+        if _simulation_has_controllable_dog():
+            add_controllable_dog(self.dogs)
+
         pygame.init()
         pygame.display.set_caption("Sheep herding")
         self.canvas = pygame.display.set_mode((self.mapW, self.mapH), DOUBLEBUF)
         self.canvas.set_alpha(None)
         self.fps = pygame.time.Clock()
-        self.translation_vector = Vector2(self.mapW/2, self.mapH/2)
-    
+        self.translation_vector = Vector2(self.mapW / 2, self.mapH / 2)
+
     def _translate_to_canvas(self, vector: Vector2):
-        translated = vector + Vector2(1,1)
-        translated.x *= self.mapW/2
-        translated.y *= self.mapH/2
+        translated = vector + Vector2(1, 1)
+        translated.x *= self.mapW / 2
+        translated.y *= self.mapH / 2
         return translated
 
     def _init_herd(self) -> list[Sheep]:
@@ -66,7 +87,7 @@ class Environment:
             )
             sheep.append(Sheep(i, position, velocity))
         return sheep
-    
+
     def _init_dogs(self) -> list[Dog]:
         dogs = []
         for i in range(self.n_dogs):
@@ -100,10 +121,10 @@ class Environment:
 
         p_excited = 0.002
         self._choose_sheep_to_excite(p_excited)
-        
+
         for sheep in self.herd:
             sheep.move(herd_copy, dogs_copy)
-        
+
         for dog in self.dogs:
             dog.move(herd_copy, dogs_copy)
 
@@ -116,7 +137,7 @@ class Environment:
                 self._translate_to_canvas(sheep.position),
                 self.mapW / 100
             )
-            
+
         for dog in self.dogs:
             pygame.draw.circle(
                 self.canvas,
@@ -128,4 +149,3 @@ class Environment:
         self.update_animals()
         pygame.display.update()
         self.fps.tick(60)
-        
