@@ -1,23 +1,21 @@
-
-import pygame 
+import pygame
 import sys
+from dotenv import load_dotenv
+load_dotenv()
 
-from enviroment import Enviroment
+from environment import Environment
+import os
 
-def main():
-    print("Hello world")
 
 if __name__ == "__main__":
-    env = Enviroment((800,800), 10, 2)
-    paused = False
+    n_sheep = int(os.getenv("N_SHEEP", 0))
+    n_dogs = int(os.getenv("N_DOG", 0))
+    env = Environment((800, 600), n_sheep, n_dogs)
+    pygame.event.set_allowed([pygame.QUIT])
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    paused = not paused
-        if not paused:
-            env.draw()
+        env.draw()
 
