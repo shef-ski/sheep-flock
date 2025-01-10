@@ -30,7 +30,9 @@ class Sheep(Animal):
         self.damping_factor = float(os.getenv('SHEEP_DAMPING_FACTOR'))
         self.l4 = float(os.getenv('DOG_AVOIDANCE_VELOCITY_WEIGHT'))
         self.dog_avoidance_radius = float(os.getenv('SHEEP_DOG_RECOGNITION_RADIUS'))
+        self.dog_max_fear_factor = float(os.getenv('DOG_FEAR_MAX_SPEED_FACTOR'))
 
+        self.fear = 1
         self.excitement_duration = 0
         self.excitement_direction = None
 
@@ -93,7 +95,7 @@ class Sheep(Animal):
                      + (self.l3 * w3)
                      + (self.l4 * w4))
 
-            self.velocity = self._limit_speed(v_raw, self.damping_factor)
+            self.velocity = self._limit_speed(v_raw, self.damping_factor, self.fear)
 
         else:
             movement = self.excitement_direction + (self.l4 * w4)
@@ -166,6 +168,15 @@ class Sheep(Animal):
             dog for dog in dogs
             if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius
         ]
+
+        closest_dog = min(dogs, key=lambda dog: (self.position - dog.position).magnitude())
+        distance_to_closest = (self.position - closest_dog.position).magnitude()
+
+        # Calculate the fear factor
+        if distance_to_closest >= self.dog_avoidance_radius:
+            self.fear = 1  # No fear if the dog is outside the radius
+        else:
+            self.fear = self.dog_max_fear_factor * (1 - distance_to_closest / self.dog_avoidance_radius)
 
         if not close_dogs:
             return Vector2(0, 0)  # No dogs in avoidance radius
