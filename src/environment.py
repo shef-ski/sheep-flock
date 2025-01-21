@@ -1,12 +1,10 @@
-from distutils.util import strtobool
-
 import numpy as np
 import pygame
 import os
 from pygame import Vector2, DOUBLEBUF
 from animals.sheep import Sheep
 from animals.dog import Dog, ControllableDog
-from utils import timed
+from utils import timed, strtobool
 import random as rand
 
 
