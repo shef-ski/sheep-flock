@@ -5,7 +5,12 @@ load_dotenv()
 
 from environment import Environment
 import os
+import random as rand
+import numpy as np
 
+seed = 2
+rand.seed(seed)
+np.random.seed(seed)
 
 if __name__ == "__main__":
     n_sheep = int(os.getenv("N_SHEEP", 0))

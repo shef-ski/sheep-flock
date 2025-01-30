@@ -58,6 +58,7 @@ class Environment:
         return translated
 
     def _init_herd(self) -> list[Sheep]:
+
         sheep = []
 
         spawn_distribution = os.getenv("SHEEP_SPAWN_DISTRIBUTION")
@@ -117,7 +118,7 @@ class Environment:
         herd_copy = self.herd.copy()
         dogs_copy = self.dogs.copy()
 
-        p_excited = 0.002
+        p_excited = 0.001
         self._choose_sheep_to_excite(p_excited)
 
         for sheep in self.herd:
