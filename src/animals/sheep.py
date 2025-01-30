@@ -169,6 +169,9 @@ class Sheep(Animal):
             if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius
         ]
 
+        if not close_dogs:
+            return Vector2(0, 0)  # No dogs in avoidance radius
+
         closest_dog = min(dogs, key=lambda dog: (self.position - dog.position).magnitude())
         distance_to_closest = (self.position - closest_dog.position).magnitude()
 
@@ -177,9 +180,6 @@ class Sheep(Animal):
             self.fear = 1  # No fear if the dog is outside the radius
         else:
             self.fear = self.dog_max_fear_factor * (1 - distance_to_closest / self.dog_avoidance_radius)
-
-        if not close_dogs:
-            return Vector2(0, 0)  # No dogs in avoidance radius
 
         avg_distance_vector = Vector2(0, 0)
         for dog in close_dogs:
