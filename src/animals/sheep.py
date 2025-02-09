@@ -1,7 +1,7 @@
 import os
 from pygame import Color, Vector2
-from src.animals.animals import Animal
 from src.utils import timed
+from src.animals.animals import Animal
 import random as rand
 
 

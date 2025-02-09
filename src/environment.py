@@ -2,9 +2,9 @@ import numpy as np
 import pygame
 import os
 from pygame import Vector2, DOUBLEBUF
-from animals.sheep import Sheep
-from animals.dog import Dog, ControllableDog
-from utils import timed, strtobool
+from src.animals.sheep import Sheep
+from src.animals.dog import Dog, ControllableDog
+from src.utils import timed, strtobool
 import random as rand
 
 
@@ -63,7 +63,7 @@ class Environment:
 
         spawn_distribution = os.getenv("SHEEP_SPAWN_DISTRIBUTION")
 
-        print(spawn_distribution)
+        print(f"spawning sheep with distribution: {spawn_distribution}")
 
         mean = [0, 0]
         cov = np.array([[0.1, 0],  # Variance for x and y (diagonal values)
