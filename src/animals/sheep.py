@@ -1,7 +1,7 @@
 import os
 from pygame import Color, Vector2
-from src.animals.animals import Animal
 from src.utils import timed
+from src.animals.animals import Animal
 import random as rand
 
 
@@ -164,6 +164,10 @@ class Sheep(Animal):
 
     @timed
     def _calculate_dog_avoidance(self, dogs):
+
+        if not dogs:
+            return Vector2(0, 0)  # No dogs at all
+
         close_dogs = [
             dog for dog in dogs
             if (self.position - dog.position).magnitude() <= self.dog_avoidance_radius
