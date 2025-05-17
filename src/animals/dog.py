@@ -1,4 +1,6 @@
 import os
+
+import pygame
 from pygame import Color, Vector2
 
 from src.animals.animals import Animal
@@ -14,8 +16,11 @@ def find_average_position_of_neighbors(neighbors):
 
 
 class Dog(Animal):
+
+    color = Color(tuple(map(int, os.getenv('COLOR_DOG').split(','))))
+
     def __init__(self, id, position, velocity):
-        super().__init__(id, position, velocity, Color(0, 0, 255, 255))
+        super().__init__(id, position, velocity, self.color)
         self.id = id
         self.max_speed = float(os.getenv('DOG_MAX_SPEED'))
         self.collision_radius = float(os.getenv('SHEEP_COLLISION_RADIUS'))
@@ -56,14 +61,12 @@ class Dog(Animal):
                      + (self.d3 * w3)
                      + (self.d3_2 * w3.rotate(90)))
 
-
-
         self.velocity = self._limit_speed(v_raw, self.damping_factor)
         self.position += self.velocity
 
     def _limit_speed(self, v_raw, min_scalar, max_modifier=1):
         """
-        Ensure the sheep's velocity does not exceed the maximum speed.
+        Ensure the dog's velocity does not exceed the maximum speed.
         """
         v_raw_magnitude = abs(v_raw.magnitude())
         epsilon = 1e-5
@@ -152,3 +155,31 @@ class Dog(Animal):
         else:
             return Vector2(0, 0)
 
+
+class ControllableDog(Dog):
+    color = Color(tuple(map(int, os.getenv('COLOR_CONTROLLABLE_DOG').split(','))))
+
+    def __init__(self, id, position, velocity):
+        super().__init__(id, position, velocity)
+        self.max_speed = float(os.getenv('CONTROLLABLE_DOG_MAX_SPEED'))
+
+    def move(self, sheep: list, dogs: list):
+        keys = pygame.key.get_pressed()
+        velocity = Vector2(0, 0)
+        speed = self.max_speed
+
+        # WASD or Arrow keys for movement
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            velocity.y -= speed
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            velocity.y += speed
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            velocity.x -= speed
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            velocity.x += speed
+
+        # Normalize the velocity so diagonal movement isn't faster
+        if velocity.length() > 0:
+            velocity = velocity.normalize() * self.max_speed
+
+        self.position += velocity
